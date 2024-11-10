@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stress-test
+spec:
+  replicas: 9  # Number of pods to create
+  selector:
+    matchLabels:
+      app: stress
+  template:
+    metadata:
+      labels:
+        app: stress
+    spec:
+      containers:
+      - name: stress
+        image: polinux/stress
+        resources:
+          requests:
+            cpu: "1"
+            memory: "512M"
+          limits:
+            cpu: "2"
+            memory: "512M"
+        command: ["stress"]
+        args:
+          - "--cpu"
+          - "1"
+          - "--vm"
+          - "4"
+          - "--vm-bytes"
+          - "100M"
+          - "--vm-keep"
