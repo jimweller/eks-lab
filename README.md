@@ -3,4 +3,4 @@
 configure kubectl for aws
 aws eks update-kubeconfig --region us-west-2 --name dev-eks-cluster
 
-~$3/day
+~$3/day or ~$90/mo

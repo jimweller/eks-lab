@@ -17,6 +17,7 @@ module "eks" {
   cluster_name    = "dev-eks-cluster"
   cluster_version = "1.31"
 
+  cluster_endpoint_private_access = true
   cluster_endpoint_public_access = true
 
   enable_irsa = true
@@ -74,7 +75,7 @@ module "vpc" {
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
   public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"]
 
-  enable_nat_gateway = false
+  enable_nat_gateway = true
   tags = {
     Environment = "dev"
   }
@@ -153,12 +154,12 @@ resource "aws_iam_role_policy_attachment" "cluster_autoscaler_policy_attachment"
   policy_arn = aws_iam_policy.cluster_autoscaler_policy.arn
 }
 
-# resource "aws_eks_pod_identity_association" "cluster_autoscaler" {
-#   provider = aws.dev
+resource "aws_eks_pod_identity_association" "cluster_autoscaler" {
+  provider = aws.dev
 
-#   cluster_name    = module.eks.cluster_name
-#   namespace       = "kube-system"
-#   service_account = "cluster-autoscaler"
-#   role_arn        = aws_iam_role.cluster_autoscaler_role.arn
-# }
+  cluster_name    = module.eks.cluster_name
+  namespace       = "kube-system"
+  service_account = "cluster-autoscaler"
+  role_arn        = aws_iam_role.cluster_autoscaler_role.arn
+}
 
