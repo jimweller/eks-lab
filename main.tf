@@ -3,22 +3,24 @@
 ############################################
 
 module "eks" {
-
-  # lock down api to my IP
-  cluster_endpoint_public_access_cidrs = ["97.113.133.254/32"]
+  source = "terraform-aws-modules/eks/aws"
 
   providers = {
     aws = aws.dev
   }
 
-  source  = "terraform-aws-modules/eks/aws"
+
+
+  # lock down api to my IP
+  cluster_endpoint_public_access_cidrs = ["97.113.133.254/32"]
+
   version = "~> 20.0"
 
   cluster_name    = "dev-eks-cluster"
   cluster_version = "1.31"
 
   cluster_endpoint_private_access = true
-  cluster_endpoint_public_access = true
+  cluster_endpoint_public_access  = true
 
   enable_irsa = true
 
@@ -47,10 +49,10 @@ module "eks" {
       min_size     = 1
       max_size     = 3
       desired_size = 1
-    }
-    tags = {
-      "k8s.io/cluster-autoscaler/enabled"         = "true"
-      "k8s.io/cluster-autoscaler/dev-eks-cluster" = "true"
+      tags = {
+        "k8s.io/cluster-autoscaler/enabled"         = "true"
+        "k8s.io/cluster-autoscaler/dev-eks-cluster" = "true"
+      }
     }
   }
 
@@ -163,3 +165,10 @@ resource "aws_eks_pod_identity_association" "cluster_autoscaler" {
   role_arn        = aws_iam_role.cluster_autoscaler_role.arn
 }
 
+
+resource "kubernetes_service_account" "cluster_autoscaler" {
+  metadata {
+    name      = aws_eks_pod_identity_association.cluster_autoscaler.service_account
+    namespace = "kube-system"
+  }
+}

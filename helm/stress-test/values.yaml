@@ -1,0 +1,20 @@
+replicaCount: 3
+image:
+  repository: polinux/stress
+  tag: latest
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    cpu: "1"
+    memory: "512Mi"
+  limits:
+    cpu: "1"
+    memory: "512Mi"
+
+args:
+  - "--cpu"
+  - "1"
+  - "--vm"
+  - "1"
+  - "--vm-keep"
