@@ -1,0 +1,4 @@
+apiVersion: v2
+name: my-shell-pod
+description: A simple shell pod for testing AWS commands
+version: 0.1.0

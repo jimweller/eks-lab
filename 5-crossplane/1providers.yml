@@ -1,0 +1,59 @@
+apiVersion: pkg.crossplane.io/v1beta1
+kind: DeploymentRuntimeConfig
+metadata:
+  name: runtime-config-aws
+spec:
+  serviceAccountTemplate:
+    metadata:
+      name: pod-role
+  deploymentTemplate:
+    metadata:
+      labels:
+        app: crossplane-provider
+    spec:
+      selector:
+        matchLabels:
+          app: crossplane-provider
+      template:
+        metadata:
+          labels:
+            app: crossplane-provider
+        spec:
+          containers:
+          - name: placeholder
+            image: busybox
+            command: ["sleep", "3600"]
+          nodeSelector:
+            role: controlplane
+---
+
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: upbound-provider-family-aws
+spec:
+  package: xpkg.upbound.io/upbound/provider-family-aws:v1.17.0
+  skipDependencyResolution: true
+  runtimeConfigRef:
+    name: runtime-config-aws
+
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-aws-ssm
+spec:
+  package: xpkg.upbound.io/upbound/provider-aws-ssm:v1.17.0
+  skipDependencyResolution: true
+  runtimeConfigRef:
+    name: runtime-config-aws
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-aws-s3
+spec:
+  package: xpkg.upbound.io/upbound/provider-aws-s3:v1.17.0
+  skipDependencyResolution: true
+  runtimeConfigRef:
+    name: runtime-config-aws

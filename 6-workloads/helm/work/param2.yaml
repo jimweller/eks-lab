@@ -1,0 +1,11 @@
+apiVersion: ssm.aws.upbound.io/v1beta1
+kind: Parameter
+metadata:
+  name: work2-foo
+spec:
+  providerConfigRef:
+    name: work2-account
+  forProvider:
+    region: us-west-1
+    type: String
+    insecureValue: "Work2 Hello world"

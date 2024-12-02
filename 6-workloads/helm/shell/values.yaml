@@ -1,0 +1,14 @@
+image:
+  repository: amazon/aws-cli
+  tag: latest
+  pullPolicy: IfNotPresent
+
+containerName: shell
+command: 
+  - "/bin/sh"
+  - "-c"
+  - "while true; do sleep 30; done"
+resources: {}
+serviceAccount:
+  create: false
+  name: pod-role

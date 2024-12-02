@@ -1,0 +1,12 @@
+apiVersion: kms.aws.crossplane.io/v1alpha1
+kind: Key
+metadata:
+  name: work1-kms-key
+spec:
+  forProvider:
+    description: "KMS Key for work1"
+    keySpec: SYMMETRIC_DEFAULT
+    keyUsage: ENCRYPT_DECRYPT
+    region: us-west-2
+  providerConfigRef:
+    name: work1-account

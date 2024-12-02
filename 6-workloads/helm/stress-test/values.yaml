@@ -1,16 +1,16 @@
 replicaCount: 3
 image:
-  repository: polinux/stress
+  repository: colinianking/stress-ng
   tag: latest
   pullPolicy: IfNotPresent
 
 resources:
   requests:
     cpu: "1"
-    memory: "512Mi"
+    memory: "1024Mi"
   limits:
     cpu: "1"
-    memory: "512Mi"
+    memory: "1024Mi"
 
 args:
   - "--cpu"

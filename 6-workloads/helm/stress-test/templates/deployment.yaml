@@ -12,6 +12,8 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
+      nodeSelector:
+        role: workloads  # Ensure autoscaler only runs on control-plane nodes
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -23,7 +25,7 @@ spec:
           limits:
             cpu: {{ .Values.resources.limits.cpu }}
             memory: {{ .Values.resources.limits.memory }}
-        command: ["stress"]
+        command: ["stress-ng"]
         args: 
         {{- toYaml .Values.args | nindent 10 }}
 

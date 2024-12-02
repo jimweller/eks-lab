@@ -188,10 +188,10 @@ extraArgs:
   # scale-down-non-empty-candidates-count: 30
   # max-node-provision-time: 15m0s
   # scan-interval: 10s
-  # scale-down-delay-after-add: 10m
+  scale-down-delay-after-add: 1m
   # scale-down-delay-after-delete: 0s
-  # scale-down-delay-after-failure: 3m
-  # scale-down-unneeded-time: 10m
+  scale-down-delay-after-failure: 1m
+  scale-down-unneeded-time: 1m
   # skip-nodes-with-system-pods: true
   # balancing-ignore-label_1: first-label-to-ignore
   # balancing-ignore-label_2: second-label-to-ignore
@@ -285,7 +285,9 @@ magnumClusterName: ""
 nameOverride: ""
 
 # nodeSelector -- Node labels for pod assignment. Ref: https://kubernetes.io/docs/user-guide/node-selection/.
-nodeSelector: {}
+nodeSelector:
+  role: controlplane  # Ensure autoscaler only runs on control-plane nodes
+
 
 # podAnnotations -- Annotations to add to each pod.
 podAnnotations: {}
@@ -411,7 +413,11 @@ serviceMonitor:
   metricRelabelings: {}
 
 # tolerations -- List of node taints to tolerate (requires Kubernetes >= 1.6).
-tolerations: []
+# tolerations:
+#   - key: "dedicated"
+#     operator: "Equal"
+#     value: "control-plane"
+#     effect: "NoSchedule"
 
 # topologySpreadConstraints -- You can use topology spread constraints to control how Pods are spread across your cluster among failure-domains such as regions, zones, nodes, and other user-defined topology domains. (requires Kubernetes >= 1.19).
 topologySpreadConstraints: []
