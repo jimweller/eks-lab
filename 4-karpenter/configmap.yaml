@@ -1,0 +1,17 @@
+apiVersion: v1
+data:
+  mapRoles: |-
+    - rolearn: arn:aws:iam::647355953950:role/controlplane-eks-node-group-2024120800225857640000000b
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+      - system:bootstrappers
+      - system:nodes
+    - rolearn: arn:aws:iam::647355953950:role/KarpenterInstanceProfile
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
+kind: ConfigMap
+metadata:
+  name: aws-auth
+  namespace: kube-system

@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-world
+  labels:
+    app: hello-world
+spec:
+  nodeSelector:
+    role: workloads  # Adjust this to match your workloads node group label
+  containers:
+  - name: hello-world
+    image: hashicorp/http-echo
+    args:
+    - "-text=Hello, World!"
+    ports:
+    - containerPort: 5678
+    resources:
+      requests:
+        cpu: 50m          # Requests 50 millicores of CPU
+        memory: 64Mi      # Requests 64 MiB of memory
+      limits:
+        cpu: 100m         # Limits to 100 millicores of CPU
+        memory: 128Mi     # Limits to 128 MiB of memory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world-service
+spec:
+  selector:
+    app: hello-world
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5678

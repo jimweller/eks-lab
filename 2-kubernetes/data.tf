@@ -19,4 +19,3 @@ data "terraform_remote_state" "cluster" {
     region = "us-west-2"
   }
 }
-
