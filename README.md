@@ -1,6 +1,14 @@
 # Kubernetes EKS Lab and Playground
 
-This repo is a playground for kubernetes and EKS.
+This repo is a playground for kubernetes and EKS. The overall intent is to
+illustrate a kubernetes architecture that can be used by a platform engineering
+team that serves teams of software engineers. Dev teams would have their k8s
+workloads in a centralized cluster AWS account. They would then have their own
+AWS accounts to provision AWS resources. IAM roles and EKS pod identities allow
+cross account access from workloads to AWS resources. Crossplane allows dev
+teams to use k8s manifests or helm files to deploy resources to their accounts
+using kubernetes and potentially leveraging custom compositions built by the
+platform team.
 
 It includes
 
