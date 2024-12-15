@@ -19,8 +19,10 @@ It includes
   - ProviderConfigs with IAM permissions for the work1 and work2 accounts
   - Helm charts to deploy resources from crossplane to the work acounts
 
-AWS Account Overview
+## AWS Account Overview
+
 ![arch1](architecture1.drawio.svg)
 
-Kubernetes and Crossplane Overview
+## Kubernetes and Crossplane Overview
+
 ![arch2](architecture2.drawio.svg)
