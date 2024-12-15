@@ -1,3 +1,6 @@
+# install crossplane first
+# hin crossplane crossplane-stable/crossplane --version 1.18.1
+
 apiVersion: pkg.crossplane.io/v1beta1
 kind: DeploymentRuntimeConfig
 metadata:

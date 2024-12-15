@@ -1,11 +1,11 @@
 locals {
   private_subnet_config = {
-    "10.0.0.0/24"   = { name = "controlplane-a", role = "controlplane", "k8s.io/cluster-autoscaler/enabled" = "true", "k8s.io/cluster-autoscaler/dev-eks-cluster" = "true" }
-    "10.0.1.0/24"   = { name = "controlplane-b", role = "controlplane", "k8s.io/cluster-autoscaler/enabled" = "true", "k8s.io/cluster-autoscaler/dev-eks-cluster" = "true" }
-    "10.0.10.0/24"  = { name = "workloads-a", role = "workloads", "karpenter.sh/discovery" = module.eks.cluster_name }
-    "10.0.11.0/24"  = { name = "workloads-b", role = "workloads", "karpenter.sh/discovery" = module.eks.cluster_name }
-    "10.0.101.0/24" = { name = "ram1", role = "ram1" }
-    "10.0.201.0/24" = { name = "ram2", role = "ram2" }
+    "10.0.0.0/24"   = { Name = "controlplane-a", role = "controlplane", "k8s.io/cluster-autoscaler/enabled" = "true", "k8s.io/cluster-autoscaler/dev-eks-cluster" = "true" }
+    "10.0.1.0/24"   = { Name = "controlplane-b", role = "controlplane", "k8s.io/cluster-autoscaler/enabled" = "true", "k8s.io/cluster-autoscaler/dev-eks-cluster" = "true" }
+    "10.0.10.0/24"  = { Name = "workloads-a", role = "workloads", "karpenter.sh/discovery" = module.eks.cluster_name }
+    "10.0.11.0/24"  = { Name = "workloads-b", role = "workloads", "karpenter.sh/discovery" = module.eks.cluster_name }
+    "10.0.101.0/24" = { Name = "ram1", role = "ram1" }
+    "10.0.201.0/24" = { Name = "ram2", role = "ram2" }
   }
 
 
@@ -19,7 +19,7 @@ locals {
   ]
 
   public_subnet_config = {
-    "10.0.20.0/24" = { name = "public", role = "public" }
+    "10.0.20.0/24" = { Name = "public", role = "public" }
   }
 
   ordered_public_subnet_keys = [
@@ -139,12 +139,11 @@ module "eks" {
   enable_cluster_creator_admin_permissions = true
 
 
-  # create_cloudwatch_log_group            = false
-  # cluster_enabled_log_types = []
-  # cloudwatch_log_group_retention_in_days = 1
+  create_cloudwatch_log_group  = true
+  cluster_enabled_log_types = []
+  cloudwatch_log_group_retention_in_days = 1
 
   create_kms_key              = false
-  create_cloudwatch_log_group = false
   cluster_encryption_config   = {}
 
 }
