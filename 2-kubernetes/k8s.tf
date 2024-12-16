@@ -11,92 +11,6 @@ resource "kubernetes_namespace" "workloads" {
 }
 
 
-############################################
-# autoscaler pod identity
-############################################
-
-# resource "aws_iam_role" "cluster_autoscaler_role" {
-
-#   name = "ClusterAutoscalerRole"
-
-#   assume_role_policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Effect = "Allow"
-#         Principal = {
-#           Service = "pods.eks.amazonaws.com"
-#         }
-#         Action = [
-#           "sts:AssumeRole",
-#           "sts:TagSession"
-#         ]
-#       }
-#     ]
-#   })
-# }
-
-
-
-# resource "aws_iam_policy" "cluster_autoscaler_policy" {
-
-#   name        = "ClusterAutoscalerPolicy"
-#   description = "Policy for EKS Cluster Autoscaler"
-
-#   policy = jsonencode({
-#     "Version" : "2012-10-17",
-#     "Statement" : [
-#       {
-#         "Effect" : "Allow",
-#         "Action" : [
-#           "autoscaling:DescribeAutoScalingGroups",
-#           "autoscaling:DescribeAutoScalingInstances",
-#           "autoscaling:DescribeLaunchConfigurations",
-#           "autoscaling:DescribeScalingActivities",
-#           "ec2:DescribeImages",
-#           "ec2:DescribeInstanceTypes",
-#           "ec2:DescribeLaunchTemplateVersions",
-#           "ec2:GetInstanceTypesFromInstanceRequirements",
-#           "eks:DescribeNodegroup"
-#         ],
-#         "Resource" : ["*"]
-#       },
-#       {
-#         "Effect" : "Allow",
-#         "Action" : [
-#           "autoscaling:SetDesiredCapacity",
-#           "autoscaling:TerminateInstanceInAutoScalingGroup"
-#         ],
-#         "Resource" : ["*"]
-#       }
-#     ]
-#   })
-# }
-
-# resource "aws_iam_role_policy_attachment" "cluster_autoscaler_policy_attachment" {
-#   role       = aws_iam_role.cluster_autoscaler_role.name
-#   policy_arn = aws_iam_policy.cluster_autoscaler_policy.arn
-# }
-
-# resource "aws_eks_pod_identity_association" "cluster_autoscaler" {
-
-#   cluster_name    = data.terraform_remote_state.cluster.outputs.eks_name
-#   namespace       = "kube-system"
-#   service_account = "cluster-autoscaler"
-#   role_arn        = aws_iam_role.cluster_autoscaler_role.arn
-# }
-
-
-# resource "kubernetes_service_account" "cluster_autoscaler" {
-#   metadata {
-#     name      = aws_eks_pod_identity_association.cluster_autoscaler.service_account
-#     namespace = "kube-system"
-#   }
-# }
-
-
-
-
 
 
 ############################################
@@ -165,6 +79,24 @@ resource "kubernetes_service_account" "superuser" {
     name      = aws_eks_pod_identity_association.superuser.service_account
     namespace = "kube-system"
   }
+}
+
+resource "kubernetes_service_account" "superuser_workloads" {
+  metadata {
+    name      = aws_eks_pod_identity_association.superuser.service_account
+    namespace = kubernetes_namespace.workloads.metadata[0].name
+    annotations = {
+      "eks.amazonaws.com/role-arn" = aws_iam_role.superuser_role.arn
+      "eks.amazonaws.com/audience" = "sts.amazonaws.com"
+    }
+  }
+}
+
+resource "aws_eks_pod_identity_association" "superuser_workloads" {
+  cluster_name    = data.terraform_remote_state.cluster.outputs.eks_name
+  namespace       = kubernetes_namespace.workloads.metadata[0].name
+  service_account = kubernetes_service_account.superuser_workloads.metadata[0].name
+  role_arn        = aws_iam_role.superuser_role.arn
 }
 
 

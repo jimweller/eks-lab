@@ -1,0 +1,11 @@
+apiVersion: example.org/v1alpha1
+kind: WebServerStackClaim
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  compositionRef:
+    name: webserverstack-composition
+  account: {{ .Values.aws.account }}
+  bucketName: {{ .Values.aws.bucketName }} # Static bucket name
+  fileName: {{ .Values.aws.fileName }}

@@ -1,0 +1,18 @@
+# Common metadata
+name: my-webserver-stack
+namespace: workloads
+
+# AWS-specific values for Crossplane
+aws:
+  account: work1-account
+  bucketName: bucket-d41d8cd98f00b204e9800998ecf8427e
+  fileName: index.html
+
+# Deployment-specific values
+deployment:
+  replicas: 1
+  image:
+    repository: nginx
+    tag: latest
+  bucketSecret: bucket-secret
+  fileSecret: file-secret

@@ -1,0 +1,28 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: webserverstack-composition
+spec:
+  compositeTypeRef:
+    apiVersion: example.org/v1alpha1
+    kind: WebServerStack
+  resources:
+    - name: s3bucket
+      base:
+        apiVersion: s3.aws.upbound.io/v1beta1
+        kind: Bucket
+        metadata:
+          annotations:
+            crossplane.io/external-name: ""
+        spec:
+          forProvider:
+            acl: private
+            region: us-west-2
+          providerConfigRef: {}
+      patches:
+        - fromFieldPath: spec.account
+          toFieldPath: spec.providerConfigRef.name
+          type: FromCompositeFieldPath
+        - fromFieldPath: spec.bucketName
+          toFieldPath: metadata.annotations['crossplane.io/external-name']
+          type: FromCompositeFieldPath

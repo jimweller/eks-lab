@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}-webserver
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: webserver
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: webserver
+  template:
+    metadata:
+      labels:
+        app: webserver
+    spec:
+      serviceAccountName: pod-role
+      volumes:
+        - name: html-volume
+          emptyDir: {}
+      initContainers:
+        - name: download-index
+          image: amazon/aws-cli:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s" \
+              $(aws sts assume-role \
+              --role-arn ${AWS_ROLE_ARN} \
+              --role-session-name superuser \
+              --query "Credentials.[AccessKeyId,SecretAccessKey,SessionToken]" \
+              --output text))
+              aws sts get-caller-identity && \
+              aws s3 cp s3://{{ .Values.aws.bucketName }}/{{ .Values.aws.fileName }} /usr/share/nginx/html/index.html
+          env:
+            - name: AWS_REGION
+              value: "us-west-2"
+            - name: BUCKET_NAME
+              value: {{ .Values.aws.bucketName }}
+            - name: FILE_NAME
+              value: {{ .Values.aws.fileName }}
+            - name: AWS_ROLE_ARN
+              value: "arn:aws:iam::296062590485:role/superuser"
+          volumeMounts:
+            - name: html-volume
+              mountPath: /usr/share/nginx/html
+      containers:
+        - name: webserver
+          image: {{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag }}
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: html-volume
+              mountPath: /usr/share/nginx/html

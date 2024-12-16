@@ -26,6 +26,8 @@ It includes
 - Crossplane
   - ProviderConfigs with IAM permissions for the work1 and work2 accounts
   - Helm charts to deploy resources from crossplane to the work acounts
+- Cross account webserver
+  - deployment in the cluster uses an init container and assume role to copy a file from a work account s3 buck to the nginx container to serve
 
 ## AWS Account Overview
 
