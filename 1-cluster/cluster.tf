@@ -47,7 +47,7 @@ module "eks" {
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
-  enable_irsa = false
+  enable_irsa = true
 
   cluster_addons = {
     coredns = {
@@ -261,4 +261,8 @@ output "eks_security_group" {
 
 output "node_group_role_arn" {
   value = module.eks.eks_managed_node_groups.controlplane.iam_role_arn
+}
+
+output "oidc_issuer_url" {
+  value = module.eks.cluster_oidc_issuer_url
 }

@@ -7,7 +7,10 @@ resource "aws_iam_role" "superuser_role" {
       {
         Effect : "Allow",
         Principal : {
-          AWS : "arn:aws:iam::647355953950:role/pod-role" # Central account pod role
+          AWS : [
+            "arn:aws:iam::647355953950:role/superuser-pod", # Central account pod role
+            "arn:aws:iam::647355953950:role/superuser-irsa" # Central account IRSA role
+          ]
         },
         Action : [
           "sts:AssumeRole",

@@ -11,4 +11,4 @@ command:
 resources: {}
 serviceAccount:
   create: false
-  name: pod-role
+  name: superuser-irsa

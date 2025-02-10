@@ -10,16 +10,13 @@ resource "kubernetes_namespace" "workloads" {
   }
 }
 
-
-
-
 ############################################
 # superuser pod identity
 ############################################
 
-resource "aws_iam_role" "superuser_role" {
+resource "aws_iam_role" "superuser_pod_role" {
 
-  name = "pod-role"
+  name = "superuser-pod"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -38,7 +35,29 @@ resource "aws_iam_role" "superuser_role" {
   })
 }
 
+resource "aws_iam_role" "superuser_irsa_role" {
+  name = "superuser-irsa"
 
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Federated = data.terraform_remote_state.cluster.outputs.oidc_arn
+        },
+        Action = "sts:AssumeRoleWithWebIdentity",
+        Condition = {
+          StringEquals = {
+            "${replace(data.terraform_remote_state.cluster.outputs.oidc_issuer_url, "https://", "")}:aud": "sts.amazonaws.com",
+            "${replace(data.terraform_remote_state.cluster.outputs.oidc_issuer_url, "https://", "")}:sub" = "system:serviceaccount:workloads:superuser-irsa"
+          }
+        }
+      }
+    ]
+  })
+}
 
 
 resource "aws_iam_policy" "superuser_policy" {
@@ -62,33 +81,37 @@ resource "aws_iam_policy" "superuser_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "superuser_policy_attachment" {
-  role       = aws_iam_role.superuser_role.name
+  role       = aws_iam_role.superuser_pod_role.name
   policy_arn = aws_iam_policy.superuser_policy.arn
 }
 
-resource "aws_eks_pod_identity_association" "superuser" {
-  cluster_name    = data.terraform_remote_state.cluster.outputs.eks_name
-  namespace       = "kube-system"
-  service_account = "pod-role"
-  role_arn        = aws_iam_role.superuser_role.arn
+
+resource "aws_iam_role_policy_attachment" "superuser_irsa_policy_attachment" {
+  role       = aws_iam_role.superuser_irsa_role.name
+  policy_arn = aws_iam_policy.superuser_policy.arn
 }
 
 
-resource "kubernetes_service_account" "superuser" {
-  metadata {
-    name      = aws_eks_pod_identity_association.superuser.service_account
-    namespace = "kube-system"
-  }
-}
+
+# resource "aws_eks_pod_identity_association" "superuser" {
+#   cluster_name    = data.terraform_remote_state.cluster.outputs.eks_name
+#   namespace       = "kube-system"
+#   service_account = "superuser-pod"
+#   role_arn        = aws_iam_role.superuser_pod_role.arn
+# }
+
+
+# resource "kubernetes_service_account" "superuser" {
+#   metadata {
+#     name      = aws_eks_pod_identity_association.superuser.service_account
+#     namespace = "kube-system"
+#   }
+# }
 
 resource "kubernetes_service_account" "superuser_workloads" {
   metadata {
-    name      = aws_eks_pod_identity_association.superuser.service_account
+    name      = "superuser-pod"
     namespace = kubernetes_namespace.workloads.metadata[0].name
-    annotations = {
-      "eks.amazonaws.com/role-arn" = aws_iam_role.superuser_role.arn
-      "eks.amazonaws.com/audience" = "sts.amazonaws.com"
-    }
   }
 }
 
@@ -96,8 +119,20 @@ resource "aws_eks_pod_identity_association" "superuser_workloads" {
   cluster_name    = data.terraform_remote_state.cluster.outputs.eks_name
   namespace       = kubernetes_namespace.workloads.metadata[0].name
   service_account = kubernetes_service_account.superuser_workloads.metadata[0].name
-  role_arn        = aws_iam_role.superuser_role.arn
+  role_arn        = aws_iam_role.superuser_pod_role.arn
 }
+
+
+resource "kubernetes_service_account" "superuser_irsa" {
+  metadata {
+    name      = "superuser-irsa"
+    namespace = kubernetes_namespace.workloads.metadata[0].name
+    annotations = {
+      "eks.amazonaws.com/role-arn" = aws_iam_role.superuser_irsa_role.arn
+    }
+  }
+}
+
 
 
 ############################################

@@ -4,7 +4,7 @@ namespace: workloads
 
 # AWS-specific values for Crossplane
 aws:
-  account: work1-account
+  account: work1-irsa-identity
   bucketName: bucket-d41d8cd98f00b204e9800998ecf8427e
   fileName: index.html
 
@@ -14,5 +14,3 @@ deployment:
   image:
     repository: nginx
     tag: latest
-  bucketSecret: bucket-secret
-  fileSecret: file-secret

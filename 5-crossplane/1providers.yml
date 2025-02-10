@@ -8,7 +8,7 @@ metadata:
 spec:
   serviceAccountTemplate:
     metadata:
-      name: pod-role
+      name: superuser-pod
   deploymentTemplate:
     metadata:
       labels:

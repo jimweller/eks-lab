@@ -2,7 +2,7 @@
 apiVersion: aws.upbound.io/v1beta1
 kind: ProviderConfig
 metadata:
-  name: work1-account
+  name: work1-pod-identity
 spec:
   credentials:
     source: PodIdentity
@@ -15,9 +15,33 @@ spec:
 apiVersion: aws.upbound.io/v1beta1
 kind: ProviderConfig
 metadata:
-  name: work2-account
+  name: work2-pod-identity
 spec:
   credentials:
     source: PodIdentity
+  assumeRoleChain:
+    - roleARN: "arn:aws:iam::195275675931:role/superuser"
+---
+# ProviderConfig for Work1 Account
+apiVersion: aws.upbound.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: work1-irsa-identity
+spec:
+  credentials:
+    source: IRSA
+  assumeRoleChain:
+    - roleARN: "arn:aws:iam::296062590485:role/superuser"
+
+---
+
+# ProviderConfig for Work2 Account
+apiVersion: aws.upbound.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: work2-irsa-identity
+spec:
+  credentials:
+    source: IRSA
   assumeRoleChain:
     - roleARN: "arn:aws:iam::195275675931:role/superuser"

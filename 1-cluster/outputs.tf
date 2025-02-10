@@ -34,3 +34,7 @@ output "public_subnet_config" {
   value = local.public_subnet_config
 }
 
+output "oidc_arn" {
+  value = module.eks.oidc_provider_arn
+}
+

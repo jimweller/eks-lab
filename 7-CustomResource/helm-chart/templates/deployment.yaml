@@ -15,7 +15,7 @@ spec:
       labels:
         app: webserver
     spec:
-      serviceAccountName: pod-role
+      serviceAccountName: superuser-pod
       volumes:
         - name: html-volume
           emptyDir: {}
