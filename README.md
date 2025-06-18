@@ -36,3 +36,4 @@ It includes
 ## Kubernetes and Crossplane Overview
 
 ![arch2](architecture2.drawio.svg)
+
